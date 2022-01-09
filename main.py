@@ -30,6 +30,7 @@ def main():
     response.raise_for_status()
     comics = response.json()
     download_comics(comics['img'])
+    print(comics['alt'])
 
 
 if __name__ == '__main__':
