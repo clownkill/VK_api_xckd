@@ -89,7 +89,7 @@ def main():
     access_token = os.getenv('vk_access_token')
     group_id = int(os.getenv('vk_group_id'))
     comics_count = get_comics_count()
-    comic_num = randint(0,comics_count)
+    comic_num = randint(0, comics_count)
     url = f'https://xkcd.com/{comic_num}/info.0.json'
     download_comic(url)
     comment = get_comic_comment(url)
