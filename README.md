@@ -1,5 +1,5 @@
 # VK_api_xckd
-Скрипт публикует случайный комикс с [xckd](https://xkcd.com/) в группе [VK](https://vk.com/).
+Скрипт публикует случайный комикс с [xckd](https://xkcd.com/) в группе [VK](https://vk.com/public210037951).
 
 ### Как установить
 
