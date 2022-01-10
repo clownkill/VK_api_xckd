@@ -23,7 +23,7 @@ def get_vk_upload_server(access_token, group_id):
     params = {
         'group_id': group_id,
     }
-    url = f'https://api.vk.com/method/photos.getWallUploadServer?{params}&access_token={access_token}&v=5.131'
+    url = f'https://api.vk.com/method/photos.getWallUploadServer?access_token={access_token}&v=5.131'
     response = requests.get(url, params=params)
     response.raise_for_status()
     upload_url = response.json()['response']['upload_url']
@@ -44,25 +44,26 @@ def vk_upload_image(upload_url):
     return photo, server, photo_hash
 
 
-def vk_save_image(upload_url, group_id):
-    pass
-
-
-def vk_post_images(access_token, group_id, comment):
-    upload_url = get_vk_upload_server(access_token, group_id)
-    photo, server, photo_hash = vk_upload_image(upload_url)
-    save_params = {
+def vk_save_image(access_token, group_id, photo, server, photo_hash):
+    params = {
         'group_id': group_id,
         'photo': photo,
         'server': server,
         'hash': photo_hash,
     }
-    save_url = f'https://api.vk.com/method/photos.saveWallPhoto?{save_params}&access_token={access_token}&v=5.131'
-    save_response = requests.post(save_url, params=save_params)
+    save_url = f'https://api.vk.com/method/photos.saveWallPhoto?access_token={access_token}&v=5.131'
+    save_response = requests.post(save_url, params=params)
     save_response.raise_for_status()
     saved_image = save_response.json()['response'][0]
     owner_id = saved_image['owner_id']
     media_id = saved_image['id']
+    return owner_id, media_id
+
+
+def vk_post_images(access_token, group_id, comment):
+    upload_url = get_vk_upload_server(access_token, group_id)
+    photo, server, photo_hash = vk_upload_image(upload_url)
+    owner_id, media_id = vk_save_image(access_token, group_id, photo, server, photo_hash)
     post_params = {
         'owner_id': -210037951,
         'from_group': 1,
@@ -72,7 +73,7 @@ def vk_post_images(access_token, group_id, comment):
     post_url = f'https://api.vk.com/method/wall.post?{post_params}&access_token={access_token}&v=5.131'
     post_response = requests.post(post_url, params=post_params)
     post_response.raise_for_status()
-    pprint(post_response.json())
+
 
 def main():
     load_dotenv()
