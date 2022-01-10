@@ -1,28 +1,22 @@
 import os
-from urllib.parse import urlsplit
-from pprint import pprint
 
 import requests
 from dotenv import load_dotenv
 
-def fetch_file_name(url):
-    url_file_path = urlsplit(url).path
-    file_name = os.path.split(url_file_path)[-1]
-    return file_name
 
-
-def download_comics(comics_url):
-    file_path = 'images/'
-    directory = os.path.dirname(file_path)
-    try:
-        os.stat(directory)
-    except:
-        os.mkdir(directory)
+def download_comics(url):
+    comics_url = requests.get(url).json()['img']
     response = requests.get(comics_url)
     response.raise_for_status()
-    name = fetch_file_name(comics_url)
-    with open(f'images/{name}', 'wb') as file:
+    with open('comics.png', 'wb') as file:
         file.write(response.content)
+
+
+def get_comics_comment(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    comment = response.json()['alt']
+    return comment
 
 
 def get_vk_upload_server(access_token, group_id):
@@ -36,13 +30,8 @@ def get_vk_upload_server(access_token, group_id):
     return upload_url
 
 
-def vk_save_image(upload_url, group_id):
-    pass
-
-
-def vk_post_images(access_token, group_id, comment):
-    upload_url = get_vk_upload_server(access_token, group_id)
-    with open('images/latency.png', 'rb') as file:
+def vk_upload_image(upload_url):
+    with open('comics.png', 'rb') as file:
         files = {
             'file': file,
         }
@@ -52,28 +41,38 @@ def vk_post_images(access_token, group_id, comment):
         photo = upload_res['photo']
         server = upload_res['server']
         photo_hash = upload_res['hash']
-        save_params = {
-            'group_id': group_id,
-            'photo': photo,
-            'server': server,
-            'hash': photo_hash,
-        }
-        save_url = f'https://api.vk.com/method/photos.saveWallPhoto?{save_params}&access_token={access_token}&v=5.131'
-        save_response = requests.post(save_url, params=save_params)
-        save_response.raise_for_status()
-        saved_image = save_response.json()['response'][0]
-        owner_id = saved_image['owner_id']
-        media_id = saved_image['id']
-        post_params = {
-            'owner_id': -210037951,
-            'from_group': 1,
-            'attachments': f'photo{owner_id}_{media_id}',
-            'message': comment,
-        }
-        post_url = f'https://api.vk.com/method/wall.post?{post_params}&access_token={access_token}&v=5.131'
-        post_response = requests.post(post_url, params=post_params)
-        post_response.raise_for_status()
-        pprint(post_response.json())
+    return photo, server, photo_hash
+
+
+def vk_save_image(upload_url, group_id):
+    pass
+
+
+def vk_post_images(access_token, group_id, comment):
+    upload_url = get_vk_upload_server(access_token, group_id)
+    photo, server, photo_hash = vk_upload_image(upload_url)
+    save_params = {
+        'group_id': group_id,
+        'photo': photo,
+        'server': server,
+        'hash': photo_hash,
+    }
+    save_url = f'https://api.vk.com/method/photos.saveWallPhoto?{save_params}&access_token={access_token}&v=5.131'
+    save_response = requests.post(save_url, params=save_params)
+    save_response.raise_for_status()
+    saved_image = save_response.json()['response'][0]
+    owner_id = saved_image['owner_id']
+    media_id = saved_image['id']
+    post_params = {
+        'owner_id': -210037951,
+        'from_group': 1,
+        'attachments': f'photo{owner_id}_{media_id}',
+        'message': comment,
+    }
+    post_url = f'https://api.vk.com/method/wall.post?{post_params}&access_token={access_token}&v=5.131'
+    post_response = requests.post(post_url, params=post_params)
+    post_response.raise_for_status()
+    pprint(post_response.json())
 
 def main():
     load_dotenv()
@@ -81,11 +80,8 @@ def main():
     ACCESS_TOKEN = os.getenv('vk_access_token')
     GROUP_ID = os.getenv('vk_group_id')
     url = 'https://xkcd.com/info.0.json'
-    response = requests.get(url)
-    response.raise_for_status()
-    comics = response.json()
-    download_comics(comics['img'])
-    comment = comics['alt']
+    download_comics(url)
+    comment = get_comics_comment(url)
     vk_post_images(ACCESS_TOKEN, GROUP_ID, comment)
 
 
