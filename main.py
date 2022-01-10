@@ -25,8 +25,7 @@ def download_comics(comics_url):
         file.write(response.content)
 
 
-def vk_upload_images(access_token, comment):
-    group_id = 210037951
+def get_vk_upload_server(access_token, group_id):
     params = {
         'group_id': group_id,
     }
@@ -34,6 +33,15 @@ def vk_upload_images(access_token, comment):
     response = requests.get(url, params=params)
     response.raise_for_status()
     upload_url = response.json()['response']['upload_url']
+    return upload_url
+
+
+def vk_save_image(upload_url, group_id):
+    pass
+
+
+def vk_post_images(access_token, group_id, comment):
+    upload_url = get_vk_upload_server(access_token, group_id)
     with open('images/latency.png', 'rb') as file:
         files = {
             'file': file,
@@ -50,10 +58,9 @@ def vk_upload_images(access_token, comment):
             'server': server,
             'hash': photo_hash,
         }
-        save_url = f'https://api.vk.com/method/photos.saveWallPhoto?{params}&access_token={access_token}&v=5.131'
+        save_url = f'https://api.vk.com/method/photos.saveWallPhoto?{save_params}&access_token={access_token}&v=5.131'
         save_response = requests.post(save_url, params=save_params)
         save_response.raise_for_status()
-        post_url = f'https://api.vk.com/method/wall.post?{params}&access_token={access_token}&v=5.131'
         saved_image = save_response.json()['response'][0]
         owner_id = saved_image['owner_id']
         media_id = saved_image['id']
@@ -63,6 +70,7 @@ def vk_upload_images(access_token, comment):
             'attachments': f'photo{owner_id}_{media_id}',
             'message': comment,
         }
+        post_url = f'https://api.vk.com/method/wall.post?{post_params}&access_token={access_token}&v=5.131'
         post_response = requests.post(post_url, params=post_params)
         post_response.raise_for_status()
         pprint(post_response.json())
@@ -71,13 +79,14 @@ def main():
     load_dotenv()
     CLIENT_ID = os.getenv('vk_client_id')
     ACCESS_TOKEN = os.getenv('vk_access_token')
+    GROUP_ID = os.getenv('vk_group_id')
     url = 'https://xkcd.com/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
     comics = response.json()
     download_comics(comics['img'])
     comment = comics['alt']
-    vk_upload_images(ACCESS_TOKEN, comment)
+    vk_post_images(ACCESS_TOKEN, GROUP_ID, comment)
 
 
 if __name__ == '__main__':
