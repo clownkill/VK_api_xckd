@@ -20,6 +20,14 @@ def get_comic_comment(url):
     return comment
 
 
+def get_comics_count():
+    url = 'https://xkcd.com/info.0.json'
+    response = requests.get(url)
+    response.raise_for_status()
+    count = response.json()['num']
+    return count
+
+
 def get_vk_upload_server(access_token, group_id):
     params = {
         'group_id': group_id,
@@ -80,7 +88,8 @@ def main():
     load_dotenv()
     access_token = os.getenv('vk_access_token')
     group_id = int(os.getenv('vk_group_id'))
-    comic_num = randint(0, 2566)
+    comics_count = get_comics_count()
+    comic_num = randint(0,comics_count)
     url = f'https://xkcd.com/{comic_num}/info.0.json'
     download_comic(url)
     comment = get_comic_comment(url)
