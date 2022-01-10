@@ -85,6 +85,7 @@ def main():
     download_comic(url)
     comment = get_comic_comment(url)
     vk_post_images(access_token, group_id, comment)
+    os.remove('comic.png')
 
 
 if __name__ == '__main__':
