@@ -36,12 +36,12 @@ def vk_upload_image(upload_url):
         files = {
             'file': file,
         }
-        upload_response = requests.post(upload_url, files=files)
-        upload_response.raise_for_status()
-        upload_res = upload_response.json()
-        photo = upload_res['photo']
-        server = upload_res['server']
-        photo_hash = upload_res['hash']
+        response = requests.post(upload_url, files=files)
+        response.raise_for_status()
+        upload_results = response.json()
+        photo = upload_results['photo']
+        server = upload_results['server']
+        photo_hash = upload_results['hash']
     return photo, server, photo_hash
 
 
@@ -52,12 +52,12 @@ def vk_save_image(access_token, group_id, photo, server, photo_hash):
         'server': server,
         'hash': photo_hash,
     }
-    save_url = f'https://api.vk.com/method/photos.saveWallPhoto?access_token={access_token}&v=5.131'
-    save_response = requests.post(save_url, params=params)
-    save_response.raise_for_status()
-    saved_image = save_response.json()['response'][0]
-    owner_id = saved_image['owner_id']
-    media_id = saved_image['id']
+    url = f'https://api.vk.com/method/photos.saveWallPhoto?access_token={access_token}&v=5.131'
+    response = requests.post(url, params=params)
+    response.raise_for_status()
+    saved_images = response.json()['response'][0]
+    owner_id = saved_images['owner_id']
+    media_id = saved_images['id']
     return owner_id, media_id
 
 
@@ -65,15 +65,15 @@ def vk_post_images(access_token, group_id, comment):
     upload_url = get_vk_upload_server(access_token, group_id)
     photo, server, photo_hash = vk_upload_image(upload_url)
     owner_id, media_id = vk_save_image(access_token, group_id, photo, server, photo_hash)
-    post_params = {
+    params = {
         'owner_id': -group_id,
         'from_group': 1,
         'attachments': f'photo{owner_id}_{media_id}',
         'message': comment,
     }
-    post_url = f'https://api.vk.com/method/wall.post?access_token={access_token}&v=5.131'
-    post_response = requests.post(post_url, params=post_params)
-    post_response.raise_for_status()
+    url = f'https://api.vk.com/method/wall.post?access_token={access_token}&v=5.131'
+    response = requests.post(url, params=params)
+    response.raise_for_status()
 
 
 def main():
