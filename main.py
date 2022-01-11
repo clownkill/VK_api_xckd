@@ -94,10 +94,12 @@ def main():
     ACCESS_TOKEN = os.getenv('VK_ACCESS_TOKEN')
     GROUP_ID = int(os.getenv('VK_GROUP_ID'))
     comic_file_name = 'comic.png'
-    comic_num = get_comics_count()
-    comment = get_comic(comic_num, comic_file_name)
-    post_vk_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
-    os.remove(comic_file_name)
+    try:
+        comic_num = get_comics_count()
+        comment = get_comic(comic_num, comic_file_name)
+        post_vk_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
+    finally:
+        os.remove(comic_file_name)
 
 
 if __name__ == '__main__':
