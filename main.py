@@ -86,14 +86,14 @@ def vk_post_images(access_token, group_id, comment):
 
 def main():
     load_dotenv()
-    access_token = os.getenv('vk_access_token')
-    group_id = int(os.getenv('vk_group_id'))
+    ACCESS_TOKEN = os.getenv('VK_ACCESS_TOKEN')
+    GROUP_ID = int(os.getenv('VK_GROUP_ID'))
     comics_count = get_comics_count()
     comic_num = randint(0, comics_count)
     url = f'https://xkcd.com/{comic_num}/info.0.json'
     download_comic(url)
     comment = get_comic_comment(url)
-    vk_post_images(access_token, group_id, comment)
+    vk_post_images(ACCESS_TOKEN, GROUP_ID, comment)
     os.remove('comic.png')
 
 
