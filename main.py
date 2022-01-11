@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 
 def get_comic(comic_num):
     url = f'https://xkcd.com/{comic_num}/info.0.json'
-    comic = requests.get(url).json()
+    comic_response = requests.get(url)
+    comic_response.raise_for_status()
+    comic = comic_response.json()
     comic_url = comic['img']
     comment = comic['alt']
     response = requests.get(comic_url)
