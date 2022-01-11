@@ -40,7 +40,7 @@ def get_vk_upload_server(access_token, group_id):
     return upload_url
 
 
-def vk_upload_image(upload_url, comic_file_name):
+def get_vk_upload_results(upload_url, comic_file_name):
     with open(f'{comic_file_name}', 'rb') as file:
         files = {
             'file': file,
@@ -54,7 +54,7 @@ def vk_upload_image(upload_url, comic_file_name):
     return photo, server, photo_hash
 
 
-def vk_save_image(access_token, group_id, photo, server, photo_hash):
+def get_vk_save_result(access_token, group_id, photo, server, photo_hash):
     params = {
         'group_id': group_id,
         'photo': photo,
@@ -72,10 +72,10 @@ def vk_save_image(access_token, group_id, photo, server, photo_hash):
     return owner_id, media_id
 
 
-def vk_post_image(access_token, group_id, comment, comic_file_name):
+def post_vk_image(access_token, group_id, comment, comic_file_name):
     upload_url = get_vk_upload_server(access_token, group_id)
-    photo, server, photo_hash = vk_upload_image(upload_url, comic_file_name)
-    owner_id, media_id = vk_save_image(access_token, group_id, photo, server, photo_hash)
+    photo, server, photo_hash = get_vk_upload_results(upload_url, comic_file_name)
+    owner_id, media_id = get_vk_save_result(access_token, group_id, photo, server, photo_hash)
     params = {
         'owner_id': -group_id,
         'from_group': 1,
@@ -96,7 +96,7 @@ def main():
     comic_file_name = 'comic.png'
     comic_num = get_comics_count()
     comment = get_comic(comic_num, comic_file_name)
-    vk_post_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
+    post_vk_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
     os.remove(comic_file_name)
 
 
