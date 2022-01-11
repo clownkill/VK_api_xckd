@@ -5,7 +5,8 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_comic(comic_num, comic_file_name):
+def get_comic(comic_file_name):
+    comic_num = get_comics_count()
     url = f'https://xkcd.com/{comic_num}/info.0.json'
     comic_response = requests.get(url)
     comic_response.raise_for_status()
@@ -105,8 +106,7 @@ def main():
     GROUP_ID = int(os.getenv('VK_GROUP_ID'))
     comic_file_name = 'comic.png'
     try:
-        comic_num = get_comics_count()
-        comment = get_comic(comic_num, comic_file_name)
+        comment = get_comic(comic_file_name)
         post_vk_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
     finally:
         os.remove(comic_file_name)
