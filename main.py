@@ -66,13 +66,13 @@ def vk_save_image(access_token, group_id, photo, server, photo_hash):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     response = requests.post(url, params=params)
     response.raise_for_status()
-    saved_images = response.json()['response'][0]
-    owner_id = saved_images['owner_id']
-    media_id = saved_images['id']
+    saved_image = response.json()['response'][0]
+    owner_id = saved_image['owner_id']
+    media_id = saved_image['id']
     return owner_id, media_id
 
 
-def vk_post_images(access_token, group_id, comment, comic_file_name):
+def vk_post_image(access_token, group_id, comment, comic_file_name):
     upload_url = get_vk_upload_server(access_token, group_id)
     photo, server, photo_hash = vk_upload_image(upload_url, comic_file_name)
     owner_id, media_id = vk_save_image(access_token, group_id, photo, server, photo_hash)
@@ -96,7 +96,7 @@ def main():
     comic_file_name = 'comic.png'
     comic_num = get_comics_count()
     comment = get_comic(comic_num, comic_file_name)
-    vk_post_images(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
+    vk_post_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
     os.remove(comic_file_name)
 
 
