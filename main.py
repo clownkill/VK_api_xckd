@@ -5,7 +5,7 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_comic(comic_num):
+def get_comic(comic_num, comic_file_name):
     url = f'https://xkcd.com/{comic_num}/info.0.json'
     comic_response = requests.get(url)
     comic_response.raise_for_status()
@@ -14,7 +14,7 @@ def get_comic(comic_num):
     comment = comic['alt']
     response = requests.get(comic_url)
     response.raise_for_status()
-    with open('comic.png', 'wb') as file:
+    with open(f'{comic_file_name}', 'wb') as file:
         file.write(response.content)
     return comment
 
@@ -40,8 +40,8 @@ def get_vk_upload_server(access_token, group_id):
     return upload_url
 
 
-def vk_upload_image(upload_url):
-    with open('comic.png', 'rb') as file:
+def vk_upload_image(upload_url, comic_file_name):
+    with open(f'{comic_file_name}', 'rb') as file:
         files = {
             'file': file,
         }
@@ -72,9 +72,9 @@ def vk_save_image(access_token, group_id, photo, server, photo_hash):
     return owner_id, media_id
 
 
-def vk_post_images(access_token, group_id, comment):
+def vk_post_images(access_token, group_id, comment, comic_file_name):
     upload_url = get_vk_upload_server(access_token, group_id)
-    photo, server, photo_hash = vk_upload_image(upload_url)
+    photo, server, photo_hash = vk_upload_image(upload_url, comic_file_name)
     owner_id, media_id = vk_save_image(access_token, group_id, photo, server, photo_hash)
     params = {
         'owner_id': -group_id,
@@ -93,10 +93,11 @@ def main():
     load_dotenv()
     ACCESS_TOKEN = os.getenv('VK_ACCESS_TOKEN')
     GROUP_ID = int(os.getenv('VK_GROUP_ID'))
+    comic_file_name = 'comic.png'
     comic_num = get_comics_count()
-    comment = get_comic(comic_num)
-    vk_post_images(ACCESS_TOKEN, GROUP_ID, comment)
-    os.remove('comic.png')
+    comment = get_comic(comic_num, comic_file_name)
+    vk_post_images(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
+    os.remove(comic_file_name)
 
 
 if __name__ == '__main__':
