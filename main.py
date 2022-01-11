@@ -5,18 +5,15 @@ import requests
 from dotenv import load_dotenv
 
 
-def download_comic(url):
-    comic_url = requests.get(url).json()['img']
+def get_comic(comic_num):
+    url = f'https://xkcd.com/{comic_num}/info.0.json'
+    comic = requests.get(url).json()
+    comic_url = comic['img']
+    comment = comic['alt']
     response = requests.get(comic_url)
     response.raise_for_status()
     with open('comic.png', 'wb') as file:
         file.write(response.content)
-
-
-def get_comic_comment(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    comment = response.json()['alt']
     return comment
 
 
@@ -25,7 +22,7 @@ def get_comics_count():
     response = requests.get(url)
     response.raise_for_status()
     count = response.json()['num']
-    return count
+    return randint(0, count)
 
 
 def get_vk_upload_server(access_token, group_id):
@@ -94,11 +91,8 @@ def main():
     load_dotenv()
     ACCESS_TOKEN = os.getenv('VK_ACCESS_TOKEN')
     GROUP_ID = int(os.getenv('VK_GROUP_ID'))
-    comics_count = get_comics_count()
-    comic_num = randint(0, comics_count)
-    url = f'https://xkcd.com/{comic_num}/info.0.json'
-    download_comic(url)
-    comment = get_comic_comment(url)
+    comic_num = get_comics_count()
+    comment = get_comic(comic_num)
     vk_post_images(ACCESS_TOKEN, GROUP_ID, comment)
     os.remove('comic.png')
 
