@@ -17,11 +17,12 @@ vk_access_token=[TOKEN]
 vk_group_id=[ID]
 ```
 В переменной `vk_access_token` хранится api-токен сгенерированный с помощью процедуры [Implict Flow](https://vk.com/dev/implicit_flow_user):
-![Получение api-токена](https://sun9-70.userapi.com/impg/3_t3fjOxKeRWK010QvA79uBgGRPwsRJFJKhpXQ/1OA_DGjtLsg.jpg?size=971x31&quality=95&sign=fb923bae81aa498f0fd3c55df01826cc&type=album)
+Для получения api-токена необходимо выполнить запрос на его получение к [api](https://oauth.vk.com/authorize) со следующими параметрами:
 - `client_id` - Идентификатор вашего приложения (отображается в адресной строке, если нажать кнопку "Редактировать" для нового приложения).
 - `scope` - [права доступа](https://vk.com/dev/permissions) для приложения. Вам потребуются следующие права:
 photos, groups, wall, offline.
   
+![Получение api-токена](https://sun9-70.userapi.com/impg/3_t3fjOxKeRWK010QvA79uBgGRPwsRJFJKhpXQ/1OA_DGjtLsg.jpg?size=971x31&quality=95&sign=fb923bae81aa498f0fd3c55df01826cc&type=album)
 API-токен приходит в ответ на запрос и выглядит как строка наподобие `533bacf01e1165b57531ad114461ae8736d6506a3`, подписанная как `access_token`.
 
 В переменной `vk_group_id` хранится идентификатор вашего сообщества Вконтакте для публикации комиксов.
