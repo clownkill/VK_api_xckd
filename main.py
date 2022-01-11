@@ -46,11 +46,11 @@ def vk_upload_image(upload_url, comic_file_name):
             'file': file,
         }
         response = requests.post(upload_url, files=files)
-        response.raise_for_status()
-        upload_results = response.json()
-        photo = upload_results['photo']
-        server = upload_results['server']
-        photo_hash = upload_results['hash']
+    response.raise_for_status()
+    upload_results = response.json()
+    photo = upload_results['photo']
+    server = upload_results['server']
+    photo_hash = upload_results['hash']
     return photo, server, photo_hash
 
 
