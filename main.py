@@ -27,6 +27,12 @@ def get_comics_count():
     return randint(0, count)
 
 
+def check_api_error(response):
+    if 'error' in response.json():
+        error = response.json()['error']['error_msg']
+        raise requests.exceptions.HTTPError(f'Ошибка при запросе к API: {error}')
+
+
 def get_vk_upload_server(access_token, group_id):
     params = {
         'group_id': group_id,
@@ -36,6 +42,7 @@ def get_vk_upload_server(access_token, group_id):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
     response = requests.get(url, params=params)
     response.raise_for_status()
+    check_api_error(response)
     upload_url = response.json()['response']['upload_url']
     return upload_url
 
@@ -47,6 +54,7 @@ def get_vk_upload_results(upload_url, comic_file_name):
         }
         response = requests.post(upload_url, files=files)
     response.raise_for_status()
+    check_api_error(response)
     upload_results = response.json()
     photo = upload_results['photo']
     server = upload_results['server']
@@ -66,6 +74,7 @@ def get_vk_save_result(access_token, group_id, photo, server, photo_hash):
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
     response = requests.post(url, params=params)
     response.raise_for_status()
+    check_api_error(response)
     saved_image = response.json()['response'][0]
     owner_id = saved_image['owner_id']
     media_id = saved_image['id']
@@ -87,6 +96,7 @@ def post_vk_image(access_token, group_id, comment, comic_file_name):
     url = 'https://api.vk.com/method/wall.post'
     response = requests.post(url, params=params)
     response.raise_for_status()
+    check_api_error(response)
 
 
 def main():
