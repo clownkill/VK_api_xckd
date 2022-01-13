@@ -108,13 +108,13 @@ def post_vk_image(access_token, group_id, comment, comic_file_name):
 
 def main():
     load_dotenv()
-    ACCESS_TOKEN = os.getenv('VK_ACCESS_TOKEN')
-    GROUP_ID = int(os.getenv('VK_GROUP_ID'))
+    access_token = os.getenv('VK_ACCESS_TOKEN')
+    group_id = int(os.getenv('VK_GROUP_ID'))
     comic_file_name = 'comic.png'
     comic_num = get_random_comic_num()
     comment = get_comic(comic_num, comic_file_name)
     try:
-        post_vk_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
+        post_vk_image(access_token, group_id, comment, comic_file_name)
     finally:
         os.remove(comic_file_name)
 
