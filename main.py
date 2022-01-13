@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 def download_comic(comic_url, comic_file_name):
     response = requests.get(comic_url)
     response.raise_for_status()
-    with open(f'{comic_file_name}', 'wb') as file:
+    with open(comic_file_name, 'wb') as file:
         file.write(response.content)
 
 
