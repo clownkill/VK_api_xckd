@@ -28,7 +28,7 @@ def get_random_comic_num():
     response = requests.get(url)
     response.raise_for_status()
     count = response.json()['num']
-    return randint(0, count)
+    return randint(1, count)
 
 
 def check_api_error(response):
@@ -109,8 +109,8 @@ def main():
     GROUP_ID = int(os.getenv('VK_GROUP_ID'))
     comic_file_name = 'comic.png'
     comic_num = get_random_comic_num()
+    comment = get_comic(comic_num, comic_file_name)
     try:
-        comment = get_comic(comic_num, comic_file_name)
         post_vk_image(ACCESS_TOKEN, GROUP_ID, comment, comic_file_name)
     finally:
         os.remove(comic_file_name)
