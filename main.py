@@ -67,7 +67,7 @@ def upload_image_to_server(upload_url, comic_file_name):
     return photo, server, photo_hash
 
 
-def get_vk_img_params(access_token, group_id, photo, server, photo_hash):
+def save_image_to_wall(access_token, group_id, photo, server, photo_hash):
     params = {
         'group_id': group_id,
         'photo': photo,
@@ -90,7 +90,7 @@ def get_vk_img_params(access_token, group_id, photo, server, photo_hash):
 def post_vk_image(access_token, group_id, comment, comic_file_name):
     upload_url = get_vk_upload_server(access_token, group_id)
     photo, server, photo_hash = upload_image_to_server(upload_url, comic_file_name)
-    owner_id, media_id = get_vk_img_params(access_token, group_id, photo, server, photo_hash)
+    owner_id, media_id = save_image_to_wall(access_token, group_id, photo, server, photo_hash)
     params = {
         'owner_id': -group_id,
         'from_group': 1,
