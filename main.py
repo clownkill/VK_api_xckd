@@ -52,7 +52,7 @@ def get_vk_upload_server(access_token, group_id):
     return upload_url
 
 
-def get_vk_save_params(upload_url, comic_file_name):
+def upload_image_to_server(upload_url, comic_file_name):
     with open(f'{comic_file_name}', 'rb') as file:
         files = {
             'file': file,
@@ -89,7 +89,7 @@ def get_vk_img_params(access_token, group_id, photo, server, photo_hash):
 
 def post_vk_image(access_token, group_id, comment, comic_file_name):
     upload_url = get_vk_upload_server(access_token, group_id)
-    photo, server, photo_hash = get_vk_save_params(upload_url, comic_file_name)
+    photo, server, photo_hash = upload_image_to_server(upload_url, comic_file_name)
     owner_id, media_id = get_vk_img_params(access_token, group_id, photo, server, photo_hash)
     params = {
         'owner_id': -group_id,
